@@ -1,4 +1,4 @@
-import { Env } from "../utils";
+import { Env } from "@utils";
 import { DataSource } from "typeorm";
 
 // Edit this
