@@ -1,2 +1,3 @@
-export * from "./numerology-entry-request.dto";
-export * from "./update-numerology-number.dto";
+export * from "./numerology-entry.dto";
+export * from "./update-numerology-entry-list.dto";
+export * from "./reading-numerology-request.dto";
