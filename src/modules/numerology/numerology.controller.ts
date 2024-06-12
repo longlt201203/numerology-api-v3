@@ -1,7 +1,7 @@
 import { ApiTags } from "@nestjs/swagger";
 import { NumerologyService } from "./numerology.service";
-import { Body, Controller, Get, Param, Put } from "@nestjs/common";
-import { NumerologyEntryDto, UpdateNumerologyEntryListDto } from "./dto";
+import { Body, Controller, Get, Param, Post, Put } from "@nestjs/common";
+import { NumerologyEntryDto, ReadNumerologyRequestDto, UpdateNumerologyEntryListDto } from "./dto";
 import { ApiResponseDto } from "@utils";
 
 @Controller("numerology")
@@ -33,5 +33,11 @@ export class NumerolgyController {
     async updateNumerologyEntryList(@Body() dto: UpdateNumerologyEntryListDto) {
         const data = await this.numerologyService.updateNumerologyEntryList(dto);
         return new ApiResponseDto(NumerologyEntryDto.fromEntities(data));
+    }
+
+    @Post("read")
+    async readNumerology(@Body() dto: ReadNumerologyRequestDto) {
+        const data = await this.numerologyService.readNumerology(dto);
+        return new ApiResponseDto(data);
     }
 }

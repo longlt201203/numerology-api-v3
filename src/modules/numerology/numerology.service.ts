@@ -1,5 +1,5 @@
 import { NumerologyEntry } from "@entities";
-import { NumerologyEntryDto, ReadingNumerologyRequestDto, UpdateNumerologyEntryListDto } from "./dto";
+import { NumerologyCalculateResultDto, NumerologyEntryDto, ReadNumerologyRequestDto, UpdateNumerologyEntryListDto } from "./dto";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { In, Repository } from "typeorm";
@@ -12,9 +12,14 @@ export class NumerologyService {
         private readonly numerologyEntryRepo: Repository<NumerologyEntry>
     ) { }
     private readonly charMap = {
-        a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9, j: 1,
-        k: 2, l: 3, m: 4, n: 5, o: 6, p: 7, q: 8, r: 9, s: 1, t: 2,
-        u: 3, v: 4, w: 5, x: 6, y: 7, z: 8
+        a: 1, i: 1, j: 1, q: 1, y: 1,
+        b: 2, k: 2, r: 2,
+        g: 3, l: 3, s: 3,
+        d: 4, m: 4, t: 4,
+        e: 5, n: 5,
+        u: 6, v: 6, w: 6, x: 6,
+        o: 7, z: 7,
+        f: 8, h: 8, p: 8
     } as const;
 
     getMany() {
@@ -67,19 +72,30 @@ export class NumerologyService {
     }
 
     calculatePsychicNumber(dob: Date) {
-        
+        return this.recursionDigitSum(dob.getDate());
     }
 
     calculateDestinyNumber(dob: Date) {
-
+        const daySum = this.recursionDigitSum(dob.getDate());
+        const monthSum = this.recursionDigitSum(dob.getMonth() + 1);
+        const yearSum = this.recursionDigitSum(dob.getFullYear());
+        return this.recursionDigitSum(daySum + monthSum + yearSum);
     }
 
     calculateFirstNameNumber(firstName: string) {
-
+        let sum = 0;
+        for (const char of firstName) {
+            if (this.charMap[char]) sum += this.charMap[char];
+        }
+        return this.recursionDigitSum(sum);
     }
 
     calculateFullNameNumber(fullName: string) {
-
+        let sum = 0;
+        for (const char of fullName) {
+            if (this.charMap[char]) sum += this.charMap[char];
+        }
+        return this.recursionDigitSum(sum);
     }
 
     recursionDigitSum(n: number): number {
@@ -97,9 +113,38 @@ export class NumerologyService {
             .replace(/đ/g, 'd');
     }
 
-    readingNumerology(dto: ReadingNumerologyRequestDto) {
+    async readNumerology(dto: ReadNumerologyRequestDto): Promise<NumerologyCalculateResultDto> {
+        const dob = new Date(dto.dob);
         const lsName = this.lowercaseAndNormalizeString(dto.lsName);
         const firstName = this.lowercaseAndNormalizeString(dto.firstName);
         const fullName = [lsName, firstName].join(" ");
+
+        const psychicNumber = this.calculatePsychicNumber(dob);
+        const destinyNumber = this.calculateDestinyNumber(dob);
+        const firstNameNumber = this.calculateFirstNameNumber(firstName);
+        const fullNameNumber = this.calculateFullNameNumber(fullName);
+
+        const [
+            psychicEntry,
+            destinyEntry,
+            firstNameEntry,
+            fullNameEntry
+        ] = await Promise.all([
+            this.numerologyEntryRepo.findOne({ where: { number: psychicNumber } }),
+            this.numerologyEntryRepo.findOne({ where: { number: destinyNumber } }),
+            this.numerologyEntryRepo.findOne({ where: { number: firstNameNumber } }),
+            this.numerologyEntryRepo.findOne({ where: { number: fullNameNumber } })
+        ]);
+
+        return {
+            psychicNumber: psychicNumber,
+            psychicDescription: "psychicEntry.psychicDescription",
+            destinyNumber: destinyNumber,
+            destinyDescription: "destinyEntry.destinyDescription",
+            firstNameNumber: firstNameNumber,
+            firstNameDescription: "firstNameEntry.nameDescription",
+            fullNameNumber: fullNameNumber,
+            fullNameDescription: "fullNameEntry.nameDescription"
+        };
     }
 }

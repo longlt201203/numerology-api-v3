@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsNotEmpty, IsString } from "class-validator";
+import { IsDateString, IsNotEmpty, IsString } from "class-validator";
 
-export class ReadingNumerologyRequestDto {
+export class ReadNumerologyRequestDto {
     @ApiProperty()
     @IsString()
     @IsNotEmpty()
@@ -13,6 +13,6 @@ export class ReadingNumerologyRequestDto {
     lsName: string;
 
     @ApiProperty()
-    @IsDate()
-    dob: Date;
+    @IsDateString()
+    dob: string;
 }
