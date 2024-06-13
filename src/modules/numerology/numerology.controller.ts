@@ -68,7 +68,7 @@ export class NumerolgyController {
     @ApiBody({ type: ImportEntriesDto })
     @UseInterceptors(FileInterceptor("file"))
     async importEntries(@UploadedFile() file: Express.Multer.File) {
-        console.log(file);
-        return "http://localhost:3000";
+        await this.numerologyService.importEntries(file);
+        return new ApiResponseDto(null, null, "Import entries successfully!");
     }
 }

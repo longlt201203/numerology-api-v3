@@ -7,7 +7,7 @@ import { MulterModule } from "@nestjs/platform-express";
 import { multerStorage } from "@utils";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([NumerologyEntry, NumerologyReadingRecord]), MulterModule.register({ storage: multerStorage })],
+    imports: [TypeOrmModule.forFeature([NumerologyEntry, NumerologyReadingRecord])],
     providers: [NumerologyService],
     controllers: [NumerolgyController]
 })

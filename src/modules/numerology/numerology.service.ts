@@ -4,6 +4,10 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { In, Repository } from "typeorm";
 import { NumerologyEntryNotFoundError } from "./errors";
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
+import { ApiError, ApiValidationError } from "@errors";
+import { InvalidImportEntriesFileFormatError } from "@modules/numerology/errors/invalid-import-entries-file-format.error";
 
 @Injectable()
 export class NumerologyService {
@@ -194,7 +198,8 @@ export class NumerologyService {
 
     async exportEntriesJSON() {
         const entries = await this.numerologyEntryRepo.find();
-        return JSON.stringify(entries);
+        const dto: UpdateNumerologyEntryListDto = { data: entries };
+        return JSON.stringify(dto);
     }
 
     async calculateNumerologyYear(dto: CalculateNumerologyYearRequestDto): Promise<CalculateNumerologyYearResultDto> {
@@ -210,6 +215,24 @@ export class NumerologyService {
         return {
             yearNumber: yearNumber,
             yearDescription: entry.yearDescription
+        }
+    }
+
+    async importEntries(file: Express.Multer.File) {
+        try {
+            const obj = JSON.parse(file.buffer.toString());
+            const dto = plainToInstance(UpdateNumerologyEntryListDto, obj, { enableCircularCheck: true, enableImplicitConversion: true });
+            const errors = await validate(dto);
+
+            if (errors.length > 0) {
+                throw new ApiValidationError(errors);
+            }
+
+            await this.updateNumerologyEntryList(dto);
+        } catch (err) {
+            if (err instanceof ApiError) throw err;
+            console.log(err);
+            throw new InvalidImportEntriesFileFormatError();
         }
     }
 }
