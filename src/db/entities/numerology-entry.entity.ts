@@ -16,4 +16,7 @@ export class NumerologyEntry {
 
     @Column({ type: "text" })
     nameDescription: string;
+
+    @Column({ type: "text" })
+    yearDescription: string;
 }

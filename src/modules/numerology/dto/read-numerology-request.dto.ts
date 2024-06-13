@@ -12,7 +12,7 @@ export class ReadNumerologyRequestDto {
     @IsNotEmpty()
     lsName: string;
 
-    @ApiProperty()
+    @ApiProperty({ type: Date })
     @IsDateString()
     dob: string;
 }

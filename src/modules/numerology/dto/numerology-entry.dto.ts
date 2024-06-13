@@ -23,13 +23,18 @@ export class NumerologyEntryDto {
     @IsString()
     nameDescription: string;
 
+    @ApiProperty()
+    @IsString()
+    yearDescription: string;
+
     static fromEntity(entity: NumerologyEntry): NumerologyEntryDto {
         return {
             id: entity.id,
             number: entity.number,
             psychicDescription: entity.psychicDescription,
             destinyDescription: entity.destinyDescription,
-            nameDescription: entity.nameDescription
+            nameDescription: entity.nameDescription,
+            yearDescription: entity.yearDescription
         }
     }
 
