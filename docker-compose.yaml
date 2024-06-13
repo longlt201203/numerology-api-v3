@@ -9,7 +9,7 @@ services:
       MYSQL_ROOT_PASSWORD: Long@123
       MYSQL_DATABASE: numerology
     volumes:
-      - db_vol:/my/own/datadir
+      - db_vol:/var/lib/mysql
 
 volumes:
   db_vol:
