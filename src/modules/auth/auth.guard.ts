@@ -39,6 +39,7 @@ export class AuthGuard implements CanActivate {
     private retrieveAccessToken(request: Request) {
         let token = this.fromCookie(request);
         if (!token) token = this.fromAuthorizationHeader(request);
+        if (!token) token = this.fromQueryParameter(request);
         return token;
     }
     
@@ -52,6 +53,11 @@ export class AuthGuard implements CanActivate {
         if (authorization && authorization.startsWith("Bearer ")) {
             token = authorization.slice("Bearer ".length, authorization.length);
         }
+        return token;
+    }
+    
+    private fromQueryParameter(request: Request) {
+        let token = request.query.accessToken;
         return token;
     }
 }
