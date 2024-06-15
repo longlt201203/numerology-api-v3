@@ -5,6 +5,7 @@ import { CalculateNumerologyYearRequestDto, ImportEntriesDto, NumerologyEntryDto
 import { ApiResponseDto } from "@utils";
 import { Response } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { SkipGuard } from "@modules/auth";
 
 @Controller("numerology")
 @ApiTags("Numerology")
@@ -52,12 +53,14 @@ export class NumerolgyController {
     }
 
     @Post("read")
+    @SkipGuard()
     async readNumerology(@Body() dto: ReadNumerologyRequestDto) {
         const data = await this.numerologyService.readNumerology(dto);
         return new ApiResponseDto(data);
     }
 
     @Post("calculate-year")
+    @SkipGuard()
     async calculateNumerologyYear(@Body() dto: CalculateNumerologyYearRequestDto) {
         const data = await this.numerologyService.calculateNumerologyYear(dto);
         return new ApiResponseDto(data);
