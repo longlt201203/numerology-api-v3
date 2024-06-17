@@ -1,4 +1,4 @@
-import { ApiBody, ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { NumerologyService } from "./numerology.service";
 import { Body, Controller, Get, Param, Post, Put, Res, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { CalculateNumerologyYearRequestDto, ImportEntriesDto, NumerologyEntryDto, NumerologyReadingRecordResponseDto, ReadNumerologyRequestDto, UpdateNumerologyEntryListDto } from "./dto";
@@ -15,18 +15,21 @@ export class NumerolgyController {
     ) {}
 
     @Get()
+    @ApiBearerAuth()
     async getMany() {
         const data = await this.numerologyService.getMany();
         return new ApiResponseDto(NumerologyEntryDto.fromEntities(data));
     }
 
     @Get("records")
+    @ApiBearerAuth()
     async getManyReadingRecords() {
         const data = await this.numerologyService.getManyRecords();
         return new ApiResponseDto(NumerologyReadingRecordResponseDto.fromEntities(data));
     }
 
     @Get("export-entries-json")
+    @ApiBearerAuth()
     async exportEntriesJson(@Res() res: Response) {
         const data = await this.numerologyService.exportEntriesJSON();
         res.setHeader("Content-Disposition", `attachment; filename="data.json"`);
@@ -35,18 +38,21 @@ export class NumerolgyController {
     }
 
     @Get(":number")
+    @ApiBearerAuth()
     async getOneByNumber(@Param("number") number: string) {
         const data = await this.numerologyService.getOneByNumber(+number);
         return new ApiResponseDto(NumerologyEntryDto.fromEntity(data));
     }
 
     @Put("update-or-create-entry")
+    @ApiBearerAuth()
     async updateOrCreateNumerologyEntry(@Body() dto: NumerologyEntryDto) {
         const data = await this.numerologyService.updateOrCreateNumerologyEntry(dto);
         return new ApiResponseDto(NumerologyEntryDto.fromEntity(data));
     }
 
     @Put("update-numerology-entry-list")
+    @ApiBearerAuth()
     async updateNumerologyEntryList(@Body() dto: UpdateNumerologyEntryListDto) {
         const data = await this.numerologyService.updateNumerologyEntryList(dto);
         return new ApiResponseDto(NumerologyEntryDto.fromEntities(data));
@@ -67,6 +73,7 @@ export class NumerolgyController {
     }
 
     @Post("import-entries")
+    @ApiBearerAuth()
     @ApiConsumes("multipart/form-data")
     @ApiBody({ type: ImportEntriesDto })
     @UseInterceptors(FileInterceptor("file"))
