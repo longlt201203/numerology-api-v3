@@ -2,7 +2,7 @@ name: Numerology API CI
 on:
   push:
     branches:
-      - development
+      - main
 
 jobs:
   build-and-push-docker:
@@ -21,4 +21,4 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: longthanhle1122/numerology-api-development:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/numerology-api:latest , ${{ secrets.DOCKERHUB_USERNAME }}/numerology-api:${{ steps.commit.outputs.short }}
