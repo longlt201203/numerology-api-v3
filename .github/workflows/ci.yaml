@@ -33,6 +33,6 @@ jobs:
       - name: Call dispatch workflow API
         run: |
           curl --location --request POST '${{ secrets.API_URI }}' \
-          --header 'Authorization ${{ secrets.PAT }}' \
+          --header 'Authorization: Bearer ${{ secrets.PAT }}' \
           --header 'Content-Type: application/json' \
           --data '{"ref":"main","inputs":{"run_id":"${{ steps.commit.outputs.short }}","project":"api"}}'
